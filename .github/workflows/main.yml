@@ -3,7 +3,7 @@ name: Main CI/CD
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   run_tests_with_pytest:
@@ -60,7 +60,7 @@ jobs:
       url: https://pypi.org/p/quickchat-ai-mcp
     permissions:
       id-token: write
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
