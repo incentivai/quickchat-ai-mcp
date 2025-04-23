@@ -1,3 +1,5 @@
+import functools
+
 from mcp.server.fastmcp import FastMCP, Context
 import requests
 import json
@@ -8,15 +10,30 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-api_key: str = os.getenv("API_KEY", "missing")
-scenario_id: str = os.getenv("SCENARIO_ID", "missing")
-conv_id: str | None = None
+API_KEY: str = os.getenv("API_KEY")
 
-CHAT_ENDPOINT = "https://chat.quickchat.ai/chat"
-SETTINGS_ENDPOINT = "https://app.quickchat.ai/mcp_settings"
+if API_KEY is None:
+    raise ValueError("API_KEY environment variable is not set. Please set it in the .env file.")
+
+SCENARIO_ID: str = os.getenv("SCENARIO_ID")
+
+if SCENARIO_ID is None:
+    raise ValueError("SCENARIO_ID environment variable is not set. Please set it in the .env file.")
+
+
+BASE_URL: str = os.getenv("BASE_URL", "https://app.quickchat.ai")
+CONV_ID: str | None = None
+
+
+CHAT_ENDPOINT = f"{BASE_URL}/v1/api/mcp/chat"
+SETTINGS_ENDPOINT = f"{BASE_URL}/v1/api/mcp/settings"
+
 
 def fetch_mcp_settings(scenario_id: str, api_key: str):
     response = requests.get(url=SETTINGS_ENDPOINT, headers={"scenario-id": scenario_id, "X-API-Key": api_key})
+
+    if response.status_code != 200:
+        raise ValueError("Configuration error. Please check your API key and scenario ID.")
 
     data = json.loads(response.content)
 
@@ -33,28 +50,38 @@ def fetch_mcp_settings(scenario_id: str, api_key: str):
 
     return mcp_name, mcp_description
 
-mcp_name, mcp_description = fetch_mcp_settings(scenario_id, api_key)
+mcp_name, dynamic_description = fetch_mcp_settings(SCENARIO_ID, API_KEY)
 
 @dataclass
 class AppContext:
-    conv_id: str | None
+    CONV_ID: str | None
 
 @asynccontextmanager
 async def app_lifespan(server: FastMCP) -> AsyncIterator[AppContext]:
-    yield AppContext(conv_id=conv_id)
+    yield AppContext(conv_id=CONV_ID)
 
 mcp = FastMCP(mcp_name, lifespan=app_lifespan)
 
+
+def quickchat_tool(mcp_description: str):
+    """Creates a decorator that adds QuickChat description and registers as an MCP tool"""
+    def decorator(func):
+        func.__doc__ = mcp_description
+        return mcp.tool()(func)
+    return decorator
+
+
+@quickchat_tool(mcp_description=dynamic_description)
 async def send_message(message: str, context: Context) -> str:
 
     mcp_client_name = context.request_context.session.client_params.clientInfo.name
 
 
-    response = requests.post(url=CHAT_ENDPOINT, json={"api_key": api_key, "scenario_id": scenario_id, "conv_id": context.request_context.lifespan_context.conv_id, "text": message, "mcp_client_name": mcp_client_name})
+    response = requests.post(url=CHAT_ENDPOINT, json={"api_key": API_KEY, "scenario_id": SCENARIO_ID, "conv_id": context.request_context.lifespan_context.conv_id, "text": message, "mcp_client_name": mcp_client_name})
 
     if response.status_code == 401:
         await context.request_context.session.send_log_message(level="error",
-                                                               data=f"Unauthorized access. Double-check your scenario_id and api_key.")
+                                                               data="Unauthorized access. Double-check your scenario_id and api_key.")
         raise ValueError("Configuration error.")
     elif response.status_code != 200:
         await context.request_context.session.send_log_message(level="error",
@@ -67,6 +94,3 @@ async def send_message(message: str, context: Context) -> str:
             context.request_context.lifespan_context.conv_id = data["conv_id"]
 
         return data["reply"]
-
-send_message.__doc__ = mcp_description
-send_message = mcp.tool()(send_message)
