@@ -60,7 +60,9 @@ async def app_lifespan(server: FastMCP) -> AsyncIterator[AppContext]:
     yield AppContext(conv_id=CONV_ID)
 
 
-async def send_message(message: str, context: Context, scenario_id:str, api_key:str) -> str:
+async def send_message(
+    message: str, context: Context, scenario_id: str, api_key: str
+) -> str:
     mcp_client_name = context.request_context.session.client_params.clientInfo.name
 
     response = requests.post(
