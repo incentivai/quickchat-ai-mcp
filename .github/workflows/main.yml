@@ -54,7 +54,7 @@ jobs:
 
 
   run_uv_build_and_pypi_upload:
-    #    needs: [ run_tests_with_pytest, run_ruff_lint, run_ruff_fmt_check ]
+    needs: [ run_tests_with_pytest, run_ruff_lint, run_ruff_fmt_check ]
     runs-on: ubuntu-latest
     environment:
       name: pypi
