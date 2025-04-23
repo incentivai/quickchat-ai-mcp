@@ -3,7 +3,8 @@ name = "quickchat-ai-mcp"
 version = "0.0.2"
 description = "Quickchat AI MCP Server"
 authors = [
-    { name = "Piotr Grudzien", email = "piotr@quickchat.ai" }
+    { name = "Piotr Grudzien", email = "piotr@quickchat.ai" },
+    { name = "Mateusz Jakubczak", email = "mateusz@quickchat.ai" }
 ]
 readme = "README.md"
 requires-python = ">=3.11"
