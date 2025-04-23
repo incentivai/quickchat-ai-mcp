@@ -29,6 +29,7 @@ mcp = FastMCP(mcp_name, lifespan=app_lifespan)
 
 
 send_message = partial(send_message, scenario_id=SCENARIO_ID, api_key=API_KEY)
+send_message.__name__ = "send_message"
 
 # Register tools by hand
 mcp.add_tool(
