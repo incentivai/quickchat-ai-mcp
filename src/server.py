@@ -10,12 +10,6 @@ import requests
 
 load_dotenv()
 
-API_KEY: str = os.getenv("API_KEY")
-
-if API_KEY is None:
-    raise ValueError(
-        "API_KEY environment variable is not set. Please set it in the .env file."
-    )
 
 SCENARIO_ID: str = os.getenv("SCENARIO_ID")
 
@@ -23,6 +17,12 @@ if SCENARIO_ID is None:
     raise ValueError(
         "SCENARIO_ID environment variable is not set. Please set it in the .env file."
     )
+
+API_KEY: str = os.getenv("API_KEY")
+
+if API_KEY is None:
+    # In case API key is not given substitute scenario to allow public usage.
+    API_KEY = SCENARIO_ID
 
 
 BASE_URL: str = os.getenv("BASE_URL", "https://app.quickchat.ai")
@@ -64,12 +64,9 @@ def fetch_mcp_settings(scenario_id: str, api_key: str):
     return mcp_name, mcp_description
 
 
-mcp_name, dynamic_description = fetch_mcp_settings(SCENARIO_ID, API_KEY)
-
-
 @dataclass
 class AppContext:
-    CONV_ID: str | None
+    conv_id: str | None
 
 
 @asynccontextmanager
@@ -77,20 +74,6 @@ async def app_lifespan(server: FastMCP) -> AsyncIterator[AppContext]:
     yield AppContext(conv_id=CONV_ID)
 
 
-mcp = FastMCP(mcp_name, lifespan=app_lifespan)
-
-
-def quickchat_tool(mcp_description: str):
-    """Creates a decorator that adds QuickChat description and registers as an MCP tool"""
-
-    def decorator(func):
-        func.__doc__ = mcp_description
-        return mcp.tool()(func)
-
-    return decorator
-
-
-@quickchat_tool(mcp_description=dynamic_description)
 async def send_message(message: str, context: Context) -> str:
     mcp_client_name = context.request_context.session.client_params.clientInfo.name
 
