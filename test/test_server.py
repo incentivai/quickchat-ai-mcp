@@ -10,6 +10,9 @@ from src.server import (
     send_message,
 )
 
+TEST_SCENARIO_ID = "test_scenario_id"
+TEST_API_KEY = "test_api_key"
+
 
 @pytest.fixture(scope="session", autouse=True)
 def mock_env():
@@ -120,7 +123,7 @@ async def test_send_message_success(mock_post, mock_response, mock_context):
     """Test successful message sending"""
     mock_post.return_value = mock_response
 
-    result = await send_message("Hello", mock_context)
+    result = await send_message("Hello", mock_context, TEST_SCENARIO_ID, TEST_API_KEY)
 
     mock_post.assert_called_once()
     assert result == "This is a test reply"
@@ -136,7 +139,7 @@ async def test_send_message_unauthorized(
     mock_post.return_value = mock_unauthorized_response
 
     with pytest.raises(ValueError, match="Configuration error"):
-        await send_message("Hello", mock_context)
+        await send_message("Hello", mock_context, TEST_SCENARIO_ID, TEST_API_KEY)
 
     mock_post.assert_called_once()
     mock_context.request_context.session.send_log_message.assert_called_once()
@@ -149,7 +152,7 @@ async def test_send_message_server_error(mock_post, mock_error_response, mock_co
     mock_post.return_value = mock_error_response
 
     with pytest.raises(ValueError, match="Server error"):
-        await send_message("Hello", mock_context)
+        await send_message("Hello", mock_context, TEST_SCENARIO_ID, TEST_API_KEY)
 
     mock_post.assert_called_once()
     mock_context.request_context.session.send_log_message.assert_called_once()
