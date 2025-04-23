@@ -11,20 +11,6 @@ import requests
 load_dotenv()
 
 
-SCENARIO_ID: str = os.getenv("SCENARIO_ID")
-
-if SCENARIO_ID is None:
-    raise ValueError(
-        "SCENARIO_ID environment variable is not set. Please set it in the .env file."
-    )
-
-API_KEY: str = os.getenv("API_KEY")
-
-if API_KEY is None:
-    # In case API key is not given substitute scenario to allow public usage.
-    API_KEY = SCENARIO_ID
-
-
 BASE_URL: str = os.getenv("BASE_URL", "https://app.quickchat.ai")
 CONV_ID: str | None = None
 
@@ -74,12 +60,12 @@ async def app_lifespan(server: FastMCP) -> AsyncIterator[AppContext]:
     yield AppContext(conv_id=CONV_ID)
 
 
-async def send_message(message: str, context: Context) -> str:
+async def send_message(message: str, context: Context, scenario_id:str, api_key:str) -> str:
     mcp_client_name = context.request_context.session.client_params.clientInfo.name
 
     response = requests.post(
         url=CHAT_ENDPOINT,
-        headers={"scenario-id": SCENARIO_ID, "X-API-Key": API_KEY},
+        headers={"scenario-id": scenario_id, "X-API-Key": api_key},
         json={
             "conv_id": context.request_context.lifespan_context.conv_id,
             "text": message,

@@ -1,20 +1,38 @@
+import os
+from functools import partial
+
 from mcp.server import FastMCP
 
 from src.server import (
-    API_KEY,
-    SCENARIO_ID,
     app_lifespan,
     fetch_mcp_settings,
     send_message,
 )
 
+SCENARIO_ID: str = os.getenv("SCENARIO_ID")
+
+if SCENARIO_ID is None:
+    raise ValueError(
+        "SCENARIO_ID environment variable is not set. Please set it in the .env file or in environment variables."
+    )
+
+API_KEY: str = os.getenv("API_KEY")
+
+if API_KEY is None:
+    # In case API key is not given substitute scenario to allow public usage.
+    API_KEY = SCENARIO_ID
+
+
 mcp_name, send_message_tool_description = fetch_mcp_settings(SCENARIO_ID, API_KEY)
 
 mcp = FastMCP(mcp_name, lifespan=app_lifespan)
 
+
+send_message = partial(send_message, scenario_id=SCENARIO_ID, api_key=API_KEY)
+
 # Register tools by hand
 mcp.add_tool(
-    fn=send_message, name="Test name", description=send_message_tool_description
+    fn=send_message, name="send_message", description=send_message_tool_description
 )
 
 
