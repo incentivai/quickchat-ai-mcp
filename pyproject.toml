@@ -1,6 +1,6 @@
 [project]
 name = "quickchat-ai-mcp"
-version = "0.1.0"
+version = "0.0.2"
 description = "Quickchat AI MCP Server"
 authors = [
     { name = "Piotr Grudzien", email = "piotr@quickchat.ai" },
@@ -11,10 +11,28 @@ requires-python = ">=3.11"
 dependencies = [
     "mcp[cli]>=1.6.0",
     "requests>=2.31.0",
-    "mcp>=1.0.0"
+    "mcp>=1.0.0",
+    "python-dotenv>=1.1.0",
 ]
-keywords=[
+keywords = [
     "quickchat",
     "mcp",
     "ai-agent"
 ]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-asyncio",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[project.scripts]
+quickchat_ai_mcp = "src.__main__:run"
+
