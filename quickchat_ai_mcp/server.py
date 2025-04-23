@@ -69,7 +69,7 @@ mcp_name, dynamic_description = fetch_mcp_settings(SCENARIO_ID, API_KEY)
 
 @dataclass
 class AppContext:
-    CONV_ID: str | None
+    conv_id: str | None
 
 
 @asynccontextmanager
@@ -96,9 +96,8 @@ async def send_message(message: str, context: Context) -> str:
 
     response = requests.post(
         url=CHAT_ENDPOINT,
+        headers={"scenario-id": SCENARIO_ID, "X-API-Key": API_KEY},
         json={
-            "api_key": API_KEY,
-            "scenario_id": SCENARIO_ID,
             "conv_id": context.request_context.lifespan_context.conv_id,
             "text": message,
             "mcp_client_name": mcp_client_name,
