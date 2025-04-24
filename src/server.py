@@ -19,7 +19,7 @@ CHAT_ENDPOINT = f"{BASE_URL}/v1/api/mcp/chat"
 SETTINGS_ENDPOINT = f"{BASE_URL}/v1/api/mcp/settings"
 
 
-def fetch_mcp_settings(scenario_id: str, api_key: str):
+def fetch_mcp_settings(scenario_id: str, api_key: str | None = None):
     response = requests.get(
         url=SETTINGS_ENDPOINT,
         headers={"scenario-id": scenario_id, "X-API-Key": api_key},
@@ -33,9 +33,10 @@ def fetch_mcp_settings(scenario_id: str, api_key: str):
     data = json.loads(response.content)
 
     try:
-        mcp_active, mcp_name, mcp_description = (
+        mcp_active, mcp_name, mcp_command, mcp_description = (
             data["active"],
             data["name"],
+            data["command"],
             data["description"],
         )
     except KeyError:
@@ -47,7 +48,7 @@ def fetch_mcp_settings(scenario_id: str, api_key: str):
     if any(not len(x) > 0 for x in (mcp_name, mcp_description)):
         raise ValueError("MCP name and description cannot be empty.")
 
-    return mcp_name, mcp_description
+    return mcp_name, mcp_command, mcp_description
 
 
 @dataclass
@@ -61,7 +62,7 @@ async def app_lifespan(server: FastMCP) -> AsyncIterator[AppContext]:
 
 
 async def send_message(
-    message: str, context: Context, scenario_id: str, api_key: str
+    message: str, context: Context, scenario_id: str, api_key: str | None = None
 ) -> str:
     mcp_client_name = context.request_context.session.client_params.clientInfo.name
 
