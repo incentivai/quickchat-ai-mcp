@@ -18,10 +18,15 @@ The Quickchat AI MCP (Model Context Protocol) server allows you to let anyone pl
   <sub>Claude tool anatomy</sub>
 </p>
 
-## Test with Claude Desktop
+## Prerequisite
+Install `uv` using:
+```commandline
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
-### Prerequisite
-Install `uv` using `curl -LsSf https://astral.sh/uv/install.sh | sh` or read more [here](https://docs.astral.sh/uv/getting-started/installation/).
+or read more [here](https://docs.astral.sh/uv/getting-started/installation/).
+
+## Test with Claude Desktop
 
 ### Configuration
 Go to Settings > Developer > Edit Config. Open to edit the claude_desktop_config.json file in a text editor. If you're just starting out, the file is going to look like this:
@@ -38,7 +43,7 @@ This is where you can define all the MCPs your Claude Desktop has access to. Her
 {
   "mcpServers": {
     "< QUICKCHAT AI MCP NAME >": {
-      "command": "uvx",
+      "command": "uv run",
       "args": ["quickchat-ai-mcp"],
       "env": {
         "SCENARIO_ID": "< QUICKCHAT AI SCENARIO ID >",
@@ -53,9 +58,6 @@ Go to the Quickchat AI app > MCP > Integration to find the above snippet with th
 
 ## Test with Cursor
 
-### Prerequisite
-Install the Quickchat AI MCP Python package: `pip install quickchat-ai-mcp`
-
 ### Configuration
 Go to Settings > Cursor Settings > MCP > Add new global MCP server and include the following:
 
@@ -63,11 +65,8 @@ Go to Settings > Cursor Settings > MCP > Add new global MCP server and include t
 {
   "mcpServers": {
     "< QUICKCHAT AI MCP NAME >": {
-      "command": "<YOUR PYTHON PATH>",
-      "args": [
-        "-m",
-        "quickchat-ai-mcp"
-      ],
+      "command": "uv run",
+      "args": ["quickchat-ai-mcp"],
       "env": {
         "SCENARIO_ID": "< QUICKCHAT AI SCENARIO ID >",
         "API_KEY": "< QUICKCHAT AI API KEY >"
@@ -78,13 +77,6 @@ Go to Settings > Cursor Settings > MCP > Add new global MCP server and include t
 ```
 
 As before, you can find values for MCP Name, Scenario Id and API Key at Quickchat AI app > MCP > Integration.
-
-### How to find YOUR PYTHON PATH?
-Open the Python console (type python into your command line) and run:
-```Python
-import sys
-print(sys.executable)
-```
 
 ## Test with other AI apps
 
@@ -104,7 +96,7 @@ Once you're ready to let other users connect your Quickchat AI MCP to their AI a
 {
   "mcpServers": {
     "< QUICKCHAT AI MCP NAME >": {
-      "command": "uvx",
+      "command": "uv",
       "args": ["quickchat-ai-mcp"],
       "env": {
         "SCENARIO_ID": "< QUICKCHAT AI SCENARIO ID >"
@@ -119,3 +111,41 @@ Once you're ready to let other users connect your Quickchat AI MCP to their AI a
 - You can control all aspects of your MCP from the Quickchat dashboard. One click and your change is deployed. That includes the MCP name and description - all your users need to do is refresh their MCP connection.
 - View all conversations in the Quickchat Inbox. Remember: those won't be the exact messages your users send to their AI app but rather the transcript of the AI <> AI interaction between their AI app and your Quickchat AI. 🤯
 - Unlike most MCP implementation, this isn't a static tool handed to an AI. It's an open-ended way to send messages to Quickchat AI Agents you create. 
+
+---
+
+## Running from source
+
+### Debugging with the [MCP inspector](https://modelcontextprotocol.io/docs/tools/inspector)
+
+```commandline
+uv run mcp dev src/__main__.py
+```
+
+### Debugging with Claude Desktop, Cursor or other AI apps
+
+Use the following JSON configuration:
+
+```JSON
+{
+  "mcpServers": {
+    "< QUICKCHAT AI MCP NAME >": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--with",
+        "mcp[cli]",
+        "--with",
+        "requests",
+        "mcp",
+        "run",
+        "< YOUR PATH>/quickchat-ai-mcp/src/__main__.py"
+      ],
+      "env": {
+        "SCENARIO_ID": "< QUICKCHAT AI SCENARIO ID >",
+        "API_KEY": "< QUICKCHAT AI API KEY >"
+      }
+    }
+  }
+}
+```
