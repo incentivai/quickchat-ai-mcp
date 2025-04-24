@@ -18,6 +18,12 @@ The Quickchat AI MCP (Model Context Protocol) server allows you to let anyone pl
   <sub>Claude tool anatomy</sub>
 </p>
 
+<p align="center">
+  <img src="img/cursor_tool_anatomy.png" alt="Cursor tool anatomy" width="600"/>
+  <br/>
+  <sub>Cursor tool anatomy</sub>
+</p>
+
 ## Test with Claude Desktop
 
 ### Prerequisite
