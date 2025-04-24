@@ -14,8 +14,7 @@ from src.server import (
 SCENARIO_ID: str = os.getenv("SCENARIO_ID")
 
 if SCENARIO_ID is None:
-    raise ValueError(
-        "SCENARIO_ID environment variable is not set. Please set it in the .env file or in environment variables."
+    raise ValueError("Please provide SCENARIO_ID."
     )
 
 API_KEY: str = os.getenv("API_KEY")

@@ -19,7 +19,7 @@ CHAT_ENDPOINT = f"{BASE_URL}/v1/api/mcp/chat"
 SETTINGS_ENDPOINT = f"{BASE_URL}/v1/api/mcp/settings"
 
 
-def fetch_mcp_settings(scenario_id: str, api_key: str | None):
+def fetch_mcp_settings(scenario_id: str, api_key: str | None = None):
     response = requests.get(
         url=SETTINGS_ENDPOINT,
         headers={"scenario-id": scenario_id, "X-API-Key": api_key},
