@@ -1,6 +1,6 @@
 [project]
 name = "quickchat-ai-mcp"
-version = "0.0.2"
+version = "0.0.3"
 description = "Quickchat AI MCP Server"
 authors = [
     { name = "Piotr Grudzien", email = "piotr@quickchat.ai" },
@@ -33,6 +33,9 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src"]
 
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [project.scripts]
-quickchat_ai_mcp = "src.__main__:run"
+quickchat-ai-mcp = "src.__main__:run"
 
