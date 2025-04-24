@@ -29,6 +29,7 @@ def mock_response():
         {
             "active": True,
             "name": "Test MCP",
+            "command": "Test Command",
             "description": "Test Description",
             "conv_id": "test-conv-id",
             "reply": "This is a test reply",
@@ -70,10 +71,11 @@ def mock_context():
 def test_fetch_mcp_settings_success(mock_get, mock_response):
     """Test successful MCP settings fetch"""
     mock_get.return_value = mock_response
-    name, description = fetch_mcp_settings("test-scenario", "test-key")
+    name, command, description = fetch_mcp_settings("test-scenario", "test-key")
 
     mock_get.assert_called_once()
     assert name == "Test MCP"
+    assert command == "Test Command"
     assert description == "Test Description"
 
 
@@ -92,7 +94,12 @@ def test_fetch_mcp_settings_error_response(mock_get, mock_error_response):
 def test_fetch_mcp_settings_inactive_mcp(mock_get, mock_response):
     """Test when MCP is not active"""
     mock_response.content = json.dumps(
-        {"active": False, "name": "Test MCP", "description": "Test Description"}
+        {
+            "active": False,
+            "name": "Test MCP",
+            "command": "Test Command",
+            "description": "Test Description",
+        }
     ).encode()
     mock_get.return_value = mock_response
 
@@ -106,7 +113,12 @@ def test_fetch_mcp_settings_inactive_mcp(mock_get, mock_response):
 def test_fetch_mcp_settings_empty_name_description(mock_get, mock_response):
     """Test when name or description is empty"""
     mock_response.content = json.dumps(
-        {"active": True, "name": "", "description": "Test Description"}
+        {
+            "active": True,
+            "name": "",
+            "command": "Test Command",
+            "description": "Test Description",
+        }
     ).encode()
     mock_get.return_value = mock_response
 
