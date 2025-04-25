@@ -1,0 +1,91 @@
+name: Main CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run_tests_with_pytest:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ '3.11', '3.12', '3.13' ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Install Dependencies
+        run:
+          uv sync --all-extras
+
+      - name: Test with pytest
+        run: |
+          uv run pytest
+
+  run_ruff_lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run ruff
+        uses: astral-sh/ruff-action@v3
+        with:
+          args: "check"
+          version-file: "./ruff.toml"
+
+  run_ruff_fmt_check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run ruff
+        uses: astral-sh/ruff-action@v3
+        with:
+          args: "format --check"
+          version-file: "./ruff.toml"
+
+
+  run_uv_build_and_pypi_upload:
+    needs: [ run_tests_with_pytest, run_ruff_lint, run_ruff_fmt_check ]
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/quickchat-ai-mcp
+    permissions:
+      id-token: write
+      contents: read
+      packages: write
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install Dependencies
+        run: uv sync
+
+      - name: debug uv
+        run: uv --help
+
+      - name: Build with uv
+        run: uv build
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
