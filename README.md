@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="img/background.jpg"/>
+  <img src="https://raw.githubusercontent.com/incentivai/quickchat-ai-mcp/main/img/background.jpg"/>
 </p>
 
 # Quickchat AI MCP server
@@ -13,13 +13,13 @@ The [Quickchat AI](https://quickchat.ai) MCP ([Model Context Protocol](https://m
 4. That's it! Now you're ready to test your Quickchat AI via any AI app and show it to the world!
 
 <p align="center">
-  <img src="img/claude_tool_anatomy.png" alt="Claude tool anatomy" width="600"/>
+  <img src="https://raw.githubusercontent.com/incentivai/quickchat-ai-mcp/main/img/claude_tool_anatomy.png" alt="Claude tool anatomy" width="600"/>
   <br/>
   <sub>Claude tool anatomy</sub>
 </p>
 
 <p align="center">
-  <img src="img/cursor_tool_anatomy.png" alt="Cursor tool anatomy" width="600"/>
+  <img src="https://raw.githubusercontent.com/incentivai/quickchat-ai-mcp/main/img/cursor_tool_anatomy.png" alt="Cursor tool anatomy" width="600"/>
   <br/>
   <sub>Cursor tool anatomy</sub>
 </p>
