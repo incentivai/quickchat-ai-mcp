@@ -24,6 +24,13 @@ The [Quickchat AI](https://quickchat.ai) MCP ([Model Context Protocol](https://m
   <sub>Cursor tool anatomy</sub>
 </p>
 
+## Useful links
+- Quickstart video [youtube.com/watch?v=JE3dNiyZO8w](https://www.youtube.com/watch?v=JE3dNiyZO8w)
+- Quickstart blog post: [quickchat.ai/post/how-to-launch-your-quickchat-ai-mcp](https://www.quickchat.ai/post/how-to-launch-your-quickchat-ai-mcp)
+- MCP (Model Context Protocol) explained: [quickchat.ai/post/mcp-explained](https://www.quickchat.ai/post/mcp-explained)
+- The Quickchat AI MCP package on PyPI: [pypi.org/project/quickchat-ai-mcp](https://pypi.org/project/quickchat-ai-mcp)
+
+
 ## Prerequisite
 Install `uv` using:
 ```commandline
@@ -113,7 +120,7 @@ Once you're ready to let other users connect your Quickchat AI MCP to their AI a
 ```
 ---
 
-### Cool features
+## Cool features
 - You can control all aspects of your MCP from the Quickchat AI dashboard. _One click and your change is deployed_. That includes the MCP name and description - all your users need to do is refresh their MCP connection.
 - View all conversations in the Quickchat Inbox. Remember: those won't be the exact messages your users send to their AI app but rather the transcript of the AI <> AI interaction between their AI app and your Quickchat AI. 🤯
 - Unlike most MCP implementations, this isn't a static tool handed to an AI. It's an open-ended way to send messages to Quickchat AI Agents you create. 🙌 
