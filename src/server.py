@@ -1,6 +1,6 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import json
 import os
 
@@ -12,7 +12,7 @@ load_dotenv()
 
 
 BASE_URL: str = os.getenv("BASE_URL", "https://app.quickchat.ai")
-CONV_ID: str | None = None
+SCENARIO_ID_TO_CONV_ID: dict[str, str] = {}
 
 
 CHAT_ENDPOINT = f"{BASE_URL}/v1/api/mcp/chat"
@@ -53,12 +53,12 @@ def fetch_mcp_settings(scenario_id: str, api_key: str | None = None):
 
 @dataclass
 class AppContext:
-    conv_id: str | None
+    scenario_to_conv_id: dict[str, str] = field(default_factory=dict)
 
 
 @asynccontextmanager
 async def app_lifespan(server: FastMCP) -> AsyncIterator[AppContext]:
-    yield AppContext(conv_id=CONV_ID)
+    yield AppContext(scenario_to_conv_id=SCENARIO_ID_TO_CONV_ID)
 
 
 async def send_message(
@@ -70,7 +70,9 @@ async def send_message(
         url=CHAT_ENDPOINT,
         headers={"scenario-id": scenario_id, "X-API-Key": api_key},
         json={
-            "conv_id": context.request_context.lifespan_context.conv_id,
+            "conv_id": context.request_context.lifespan_context.scenario_to_conv_id.get(
+                scenario_id
+            ),
             "text": message,
             "mcp_client_name": mcp_client_name,
         },
@@ -90,7 +92,14 @@ async def send_message(
     else:
         data = json.loads(response.content)
 
-        if context.request_context.lifespan_context.conv_id is None:
-            context.request_context.lifespan_context.conv_id = data["conv_id"]
+        if (
+            context.request_context.lifespan_context.scenario_to_conv_id.get(
+                scenario_id
+            )
+            is None
+        ):
+            context.request_context.lifespan_context.scenario_to_conv_id[
+                scenario_id
+            ] = data["conv_id"]
 
         return data["reply"]

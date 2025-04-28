@@ -62,7 +62,7 @@ def mock_context():
     context = MagicMock()
     context.request_context.session.client_params.clientInfo.name = "Test Client"
     context.request_context.session.send_log_message = AsyncMock()
-    context.request_context.lifespan_context.conv_id = None
+    context.request_context.lifespan_context.scenario_to_conv_id = {}
     return context
 
 
@@ -139,7 +139,12 @@ async def test_send_message_success(mock_post, mock_response, mock_context):
 
     mock_post.assert_called_once()
     assert result == "This is a test reply"
-    assert mock_context.request_context.lifespan_context.conv_id == "test-conv-id"
+    assert (
+        mock_context.request_context.lifespan_context.scenario_to_conv_id.get(
+            TEST_SCENARIO_ID
+        )
+        == "test-conv-id"
+    )
 
 
 @pytest.mark.asyncio
@@ -177,4 +182,49 @@ async def test_app_lifespan():
     mock_server = MagicMock()
 
     async with app_lifespan(mock_server) as context:
-        assert context.conv_id is None
+        assert context.scenario_to_conv_id == {}
+
+
+@pytest.mark.asyncio
+@patch("requests.post")
+async def test_multiple_conv_ids(mock_post):
+    """Test correct handling of requests with multiple scenario_ids and conv_ids"""
+    assert mock_context.request_context.lifespan_context.scenario_to_conv_id == {}
+
+    mock_response = json.dumps(
+        {
+            "conv_id": "conv_id1",
+            "reply": "This is a test reply",
+        }
+    ).encode()
+    mock_post.return_value = mock_response
+    await send_message("Hello", mock_context, "scenario_id1", TEST_API_KEY)
+    assert mock_context.request_context.lifespan_context.scenario_to_conv_id == {
+        "scenario_id1": "conv_id1"
+    }
+
+    mock_response = json.dumps(
+        {
+            "conv_id": "conv_id2",
+            "reply": "This is a test reply",
+        }
+    ).encode()
+    mock_post.return_value = mock_response
+    await send_message("Hello", mock_context, "scenario_id2", TEST_API_KEY)
+    assert mock_context.request_context.lifespan_context.scenario_to_conv_id == {
+        "scenario_id1": "conv_id1",
+        "scenario_id2": "conv_id2",
+    }
+
+    mock_response = json.dumps(
+        {
+            "conv_id": "conv_id3",
+            "reply": "This is a test reply",
+        }
+    ).encode()
+    mock_post.return_value = mock_response
+    await send_message("Hello", mock_context, "scenario_id1", TEST_API_KEY)
+    assert mock_context.request_context.lifespan_context.scenario_to_conv_id == {
+        "scenario_id1": "conv_id3",
+        "scenario_id2": "conv_id2",
+    }

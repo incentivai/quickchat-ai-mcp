@@ -371,7 +371,7 @@ wheels = [
 
 [[package]]
 name = "quickchat-ai-mcp"
-version = "0.0.4"
+version = "0.0.10"
 source = { editable = "." }
 dependencies = [
     { name = "mcp", extra = ["cli"] },
