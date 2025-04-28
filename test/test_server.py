@@ -187,7 +187,7 @@ async def test_app_lifespan():
 
 @pytest.mark.asyncio
 @patch("requests.post")
-async def test_multiple_conv_ids(mock_post):
+async def test_multiple_conv_ids(mock_post, mock_context):
     """Test correct handling of requests with multiple scenario_ids and conv_ids"""
     assert mock_context.request_context.lifespan_context.scenario_to_conv_id == {}
 
