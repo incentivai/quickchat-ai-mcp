@@ -29,7 +29,7 @@ The [Quickchat AI](https://quickchat.ai) MCP ([Model Context Protocol](https://m
 - Quickstart blog post: [quickchat.ai/post/how-to-launch-your-quickchat-ai-mcp](https://www.quickchat.ai/post/how-to-launch-your-quickchat-ai-mcp)
 - MCP (Model Context Protocol) explained: [quickchat.ai/post/mcp-explained](https://www.quickchat.ai/post/mcp-explained)
 - The Quickchat AI MCP package on PyPI: [pypi.org/project/quickchat-ai-mcp](https://pypi.org/project/quickchat-ai-mcp)
-- The Quickchat AI MCP GitHub repo: [github.com/incentivai/quickchat-ai-mcp](https://github.com/incentivai/quickchat-ai-mcp)
+- The Quickchat AI MCP GitHub repo: [github.com/quickchatai/quickchat-ai-mcp](https://github.com/quickchatai/quickchat-ai-mcp)
 
 ## Prerequisite
 Install `uv` using:
@@ -175,4 +175,4 @@ uv run pytest
 
 ## GitHub Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=incentivai/quickchat-ai-mcp&type=Date)](https://www.star-history.com/#incentivai/quickchat-ai-mcp&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=quickchatai/quickchat-ai-mcp&type=Date)](https://www.star-history.com/#quickchatai/quickchat-ai-mcp&Date)
